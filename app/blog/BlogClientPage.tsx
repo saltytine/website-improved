@@ -5,7 +5,6 @@ import { ChevronRight, Filter, Tag, Clock, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useState, useEffect } from "react"
@@ -49,15 +48,14 @@ const BugcrowdIcon = (props) => (
   </svg>
 )
 
-export default function BlogClientPage() {
+function BlogClientPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [category, setCategory] = useState("All Categories")
   const [sortBy, setSortBy] = useState("Newest First")
   const itemsPerPage = 6
   const [filteredPosts, setFilteredPosts] = useState([])
   const [displayedPosts, setDisplayedPosts] = useState([])
-  // Add a new state variable for the active tab
-  const [activeTab, setActiveTab] = useState("all")
+  const [filterType, setFilterType] = useState("all")
 
   const blogPosts = [
     {
@@ -242,12 +240,12 @@ export default function BlogClientPage() {
     }
 
     // Apply tab filter
-    if (activeTab === "trends") {
+    if (filterType === "trends") {
       filtered = filtered.filter((post) => post.category === "Trends")
-    } else if (activeTab === "tutorials") {
+    } else if (filterType === "tutorials") {
       // Assuming tutorials would be tagged with a specific category
       filtered = filtered.filter((post) => post.tags.some((tag) => tag.toLowerCase().includes("tutorial")))
-    } else if (activeTab === "research") {
+    } else if (filterType === "research") {
       // Assuming research posts would be tagged with research or have research in the title
       filtered = filtered.filter(
         (post) =>
@@ -260,7 +258,7 @@ export default function BlogClientPage() {
 
     // Reset to first page when filters change
     setCurrentPage(1)
-  }, [sortBy, category, activeTab])
+  }, [sortBy, category, filterType])
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
@@ -322,16 +320,27 @@ export default function BlogClientPage() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <Tabs defaultValue="all" className="w-full lg:w-auto" onValueChange={setActiveTab}>
-              <TabsList className="bg-malectrica-darker">
-                <TabsTrigger value="all">All Posts</TabsTrigger>
-                <TabsTrigger value="trends">Trends</TabsTrigger>
-                <TabsTrigger value="tutorials">Tutorials</TabsTrigger>
-                <TabsTrigger value="research">Research</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex flex-wrap gap-2 w-full">
+              <Select value={filterType} onValueChange={(value) => setFilterType(value)}>
+                <SelectTrigger className="w-full sm:w-[150px] bg-malectrica-darker border-malectrica-blue/30">
+                  <SelectValue className="text-white">
+                    {filterType === "all"
+                      ? "All Posts"
+                      : filterType === "trends"
+                        ? "Trends"
+                        : filterType === "tutorials"
+                          ? "Tutorials"
+                          : "Research"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-malectrica-darker border-malectrica-blue/30 text-white">
+                  <SelectItem value="all">All Posts</SelectItem>
+                  <SelectItem value="trends">Trends</SelectItem>
+                  <SelectItem value="tutorials">Tutorials</SelectItem>
+                  <SelectItem value="research">Research</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Select value={category} onValueChange={(value) => setCategory(value)}>
                 <SelectTrigger className="w-full sm:w-[180px] bg-malectrica-darker border-malectrica-blue/30">
                   <SelectValue className="text-white">{category}</SelectValue>
@@ -505,3 +514,7 @@ export default function BlogClientPage() {
     </div>
   )
 }
+
+// Export both as a named export and as default
+export { BlogClientPage }
+export default BlogClientPage
