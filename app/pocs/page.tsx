@@ -5,7 +5,6 @@ import { ChevronRight, Filter, CalendarDays, Code, Github, Eye } from "lucide-re
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState, useEffect } from "react"
 
@@ -15,7 +14,7 @@ export default function POCsPage() {
       title: "XSS Vulnerability in Web Framework",
       description:
         "This POC demonstrates a cross-site scripting vulnerability in the popular framework that bypasses built-in XSS protection.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a severe cross-site scripting (XSS) vulnerability affecting versions 5.2.0 through 5.4.3 of the WebFrame framework. The vulnerability allows attackers to bypass the framework's built-in XSS protections by using a combination of HTML5 template elements and SVG animations. This can lead to client-side code execution in the context of the victim's browser session.",
       language: "JavaScript",
       date: "2023-12-01",
@@ -33,7 +32,7 @@ export default function POCsPage() {
       title: "Buffer Overflow in IoT Device Firmware",
       description:
         "A demonstration of exploiting a buffer overflow vulnerability in a widely-used IoT device that can lead to remote code execution.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a critical buffer overflow vulnerability in the firmware of SmartConnect IoT devices (models SC-100, SC-200, and SC-300) running firmware versions 2.1.0 through 2.4.2. The vulnerability exists in the network packet processing component where input validation is insufficient, allowing an attacker to send specially crafted packets that trigger a buffer overflow and potentially achieve remote code execution with device privileges.",
       language: "C",
       date: "2023-11-12",
@@ -51,7 +50,7 @@ export default function POCsPage() {
       title: "JWT Token Forgery Exploit",
       description:
         "This POC shows how to forge JWT tokens in applications using a vulnerable library version, allowing unauthorized access.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a vulnerability in the SecureToken JWT library (versions 1.3.0 through 1.5.2) that allows attackers to forge valid JSON Web Tokens (JWT) due to improper signature verification. The vulnerability stems from a flawed implementation of the 'none' algorithm validation, which can be exploited to create tokens with arbitrary claims that will be accepted as valid without requiring any cryptographic key.",
       language: "Python",
       date: "2023-10-18",
@@ -70,7 +69,7 @@ export default function POCsPage() {
       title: "SSRF in Cloud Service Provider API",
       description:
         "A server-side request forgery vulnerability in a major cloud provider's management API that allows internal network scanning.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a server-side request forgery (SSRF) vulnerability in CloudManager's API service (versions 2.8.0 to 3.2.1). The vulnerability exists in the resource validation endpoint which improperly validates URLs in user-provided configuration files. An attacker can exploit this vulnerability to make requests to internal services behind the firewall, potentially accessing sensitive metadata and other internal resources.",
       language: "Python",
       date: "2023-09-25",
@@ -87,7 +86,7 @@ export default function POCsPage() {
     {
       title: "SQL Injection in E-Commerce Platform",
       description: "A blind SQL injection vulnerability in a popular e-commerce platform's product search feature.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a blind SQL injection vulnerability in the ShopSystem e-commerce platform (versions 4.5.0 to 4.8.3). The vulnerability exists in the product search feature where user input is not properly sanitized before being used in database queries. By manipulating the search parameters, an attacker can execute arbitrary SQL commands against the backend database, potentially extracting sensitive information like customer data and credentials.",
       language: "PHP",
       date: "2023-08-17",
@@ -105,7 +104,7 @@ export default function POCsPage() {
       title: "Path Traversal in File Upload Component",
       description:
         "A path traversal vulnerability in a widely-used file upload library that allows writing files to arbitrary locations.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a path traversal vulnerability in the FileProcessor library (versions 2.0.0 to 2.3.5) used in many web applications for file upload functionality. The vulnerability exists in the file path sanitization routine which can be bypassed using specific path sequences. An attacker can exploit this to upload files to arbitrary locations on the server filesystem, potentially leading to remote code execution if the files are uploaded to executable directories.",
       language: "JavaScript",
       date: "2023-07-24",
@@ -124,7 +123,7 @@ export default function POCsPage() {
       title: "OAuth2 Redirect URI Validation Bypass",
       description:
         "A vulnerability in OAuth2 implementation that allows attackers to bypass redirect URI validation and steal authorization codes.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a security bypass vulnerability in AuthProvider's OAuth2 implementation (versions 3.1.0 to 3.4.2). The vulnerability stems from a flaw in the redirect URI validation logic which fails to correctly normalize URIs before comparison. An attacker can exploit this vulnerability to bypass the redirect URI validation by using specially crafted URLs, potentially stealing authorization codes and gaining unauthorized access to user accounts.",
       language: "Python",
       date: "2023-06-15",
@@ -143,7 +142,7 @@ export default function POCsPage() {
       title: "Container Escape via Host Mount",
       description:
         "A demonstration of a container escape technique that leverages improperly configured volume mounts to access the host filesystem.",
-      fullDescription:
+      longDescription:
         "This proof-of-concept demonstrates a container escape vulnerability in ContainerPlatform (versions 4.2.0 to 4.5.1) when used with specific mount configurations. The vulnerability exists due to improper validation of volume mount paths, allowing a privileged container to access and modify the host filesystem beyond intended boundaries. An attacker with access to a container can exploit this to escape the container environment and potentially compromise the host system.",
       language: "Bash",
       date: "2023-05-22",
@@ -166,8 +165,7 @@ export default function POCsPage() {
   const itemsPerPage = 4
   const [filteredPocs, setFilteredPocs] = useState(pocs)
   const [displayedPocs, setDisplayedPocs] = useState([])
-  // Add a new state variable for the active tab
-  const [activeTab, setActiveTab] = useState("all")
+  const [filterType, setFilterType] = useState("all")
 
   useEffect(() => {
     let result = pocs
@@ -181,8 +179,8 @@ export default function POCsPage() {
       result = result.filter((poc) => poc.impact === severity)
     }
 
-    // Filter and sort by tab
-    switch (activeTab) {
+    // Filter and sort by type
+    switch (filterType) {
       case "verified":
         result = result.filter((poc) => poc.verifiedWorks === true)
         break
@@ -199,7 +197,7 @@ export default function POCsPage() {
 
     // Reset to first page when filters change
     setCurrentPage(1)
-  }, [language, severity, activeTab])
+  }, [language, severity, filterType])
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
@@ -245,16 +243,27 @@ export default function POCsPage() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <Tabs defaultValue="all" className="w-full lg:w-auto" onValueChange={setActiveTab}>
-              <TabsList className="bg-malectrica-darker">
-                <TabsTrigger value="all">All POCs</TabsTrigger>
-                <TabsTrigger value="verified">Verified</TabsTrigger>
-                <TabsTrigger value="recent">Recent</TabsTrigger>
-                <TabsTrigger value="popular">Popular</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex flex-wrap gap-2 w-full">
+              <Select value={filterType} onValueChange={(value) => setFilterType(value)}>
+                <SelectTrigger className="w-full sm:w-[150px] bg-malectrica-darker border-malectrica-blue/30">
+                  <SelectValue className="text-white">
+                    {filterType === "all"
+                      ? "All POCs"
+                      : filterType === "verified"
+                        ? "Verified"
+                        : filterType === "recent"
+                          ? "Recent"
+                          : "Popular"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-malectrica-darker border-malectrica-blue/30 text-white">
+                  <SelectItem value="all">All POCs</SelectItem>
+                  <SelectItem value="verified">Verified</SelectItem>
+                  <SelectItem value="recent">Recent</SelectItem>
+                  <SelectItem value="popular">Popular</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Select value={language} onValueChange={(value) => setLanguage(value)}>
                 <SelectTrigger className="w-full sm:w-[150px] bg-malectrica-darker border-malectrica-blue/30">
                   <SelectValue className="text-white">{language}</SelectValue>
@@ -263,7 +272,7 @@ export default function POCsPage() {
                   <SelectItem value="All Languages">All Languages</SelectItem>
                   <SelectItem value="JavaScript">JavaScript</SelectItem>
                   <SelectItem value="Python">Python</SelectItem>
-                  <SelectItem value="C/C++">C/C++</SelectItem>
+                  <SelectItem value="C">C/C++</SelectItem>
                   <SelectItem value="PHP">PHP</SelectItem>
                   <SelectItem value="Bash">Bash</SelectItem>
                 </SelectContent>
@@ -421,4 +430,3 @@ export default function POCsPage() {
     </div>
   )
 }
-
