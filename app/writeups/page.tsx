@@ -5,7 +5,6 @@ import { ChevronRight, Filter, Tag, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useState, useEffect } from "react"
@@ -17,8 +16,7 @@ export default function WriteUpsPage() {
   const itemsPerPage = 6
   const [filteredWriteups, setFilteredWriteups] = useState([])
   const [displayedWriteups, setDisplayedWriteups] = useState([])
-  // Add a new state variable for the active tab
-  const [activeTab, setActiveTab] = useState("all")
+  const [filterType, setFilterType] = useState("all")
 
   const writeups = [
     {
@@ -175,13 +173,13 @@ export default function WriteUpsPage() {
     }
 
     // Filter by tab
-    if (activeTab === "web") {
+    if (filterType === "web") {
       filtered = filtered.filter((writeup) => writeup.category.toLowerCase().includes("web"))
-    } else if (activeTab === "cloud") {
+    } else if (filterType === "cloud") {
       filtered = filtered.filter((writeup) => writeup.category.toLowerCase().includes("cloud"))
-    } else if (activeTab === "mobile") {
+    } else if (filterType === "mobile") {
       filtered = filtered.filter((writeup) => writeup.category.toLowerCase().includes("mobile"))
-    } else if (activeTab === "iot") {
+    } else if (filterType === "iot") {
       filtered = filtered.filter((writeup) => writeup.category.toLowerCase().includes("iot"))
     }
 
@@ -189,7 +187,7 @@ export default function WriteUpsPage() {
 
     // Reset to first page when filters change
     setCurrentPage(1)
-  }, [sortOrder, category, activeTab])
+  }, [sortOrder, category, filterType])
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
@@ -211,17 +209,30 @@ export default function WriteUpsPage() {
           </div>
 
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <Tabs defaultValue="all" className="w-full lg:w-auto" onValueChange={setActiveTab}>
-              <TabsList className="bg-malectrica-darker">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="web">Web Security</TabsTrigger>
-                <TabsTrigger value="cloud">Cloud</TabsTrigger>
-                <TabsTrigger value="mobile">Mobile</TabsTrigger>
-                <TabsTrigger value="iot">IoT</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex flex-wrap gap-2 w-full">
+              <Select value={filterType} onValueChange={(value) => setFilterType(value)}>
+                <SelectTrigger className="w-full sm:w-[150px] bg-malectrica-darker border-malectrica-blue/30">
+                  <SelectValue className="text-white">
+                    {filterType === "all"
+                      ? "All Topics"
+                      : filterType === "web"
+                        ? "Web Security"
+                        : filterType === "cloud"
+                          ? "Cloud"
+                          : filterType === "mobile"
+                            ? "Mobile"
+                            : "IoT"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-malectrica-darker border-malectrica-blue/30 text-white">
+                  <SelectItem value="all">All Topics</SelectItem>
+                  <SelectItem value="web">Web Security</SelectItem>
+                  <SelectItem value="cloud">Cloud</SelectItem>
+                  <SelectItem value="mobile">Mobile</SelectItem>
+                  <SelectItem value="iot">IoT</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               <Select value={category} onValueChange={(value) => setCategory(value)}>
                 <SelectTrigger className="w-full sm:w-[180px] bg-malectrica-darker border-malectrica-blue/30">
                   <SelectValue className="text-white">{category}</SelectValue>
@@ -296,7 +307,7 @@ export default function WriteUpsPage() {
                 <CardFooter className="flex items-center justify-between border-t border-malectrica-blue/20 pt-4">
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={writeup.authorImage} alt={writeup.author} />
+                      <AvatarImage src={writeup.authorImage || "/placeholder.svg"} alt={writeup.author} />
                       <AvatarFallback className="bg-malectrica-blue/20 text-malectrica-blue">
                         {writeup.author.charAt(0)}
                       </AvatarFallback>
@@ -356,4 +367,3 @@ export default function WriteUpsPage() {
     </div>
   )
 }
-
